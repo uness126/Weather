@@ -1,11 +1,20 @@
 using log4net.Core;
+using Microsoft.AspNetCore.Mvc;
 using Weather;
 using Weather.Extensions;
 using Weather.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors();
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.CacheProfiles.Add("Cache1min",
+        new CacheProfile
+        {
+            Duration = 60,
+            Location = ResponseCacheLocation.Client
+        });
+});
 
 #region Add Services
 
@@ -24,6 +33,8 @@ builder.Logging.AddLog4Net("log4net.config");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddResponseCaching();
 
 var app = builder.Build();
 
@@ -47,5 +58,6 @@ app.UseAuthorization();
 app.UseMiddleware<JwtMiddleware>();
 
 app.MapControllers();
+app.UseResponseCaching();
 
 app.Run();

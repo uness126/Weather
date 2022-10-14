@@ -33,6 +33,7 @@ public class WeatherController : ControllerBase
 
     [Authorize]
     [HttpGet("[action]/{city}")]
+    [ResponseCache(CacheProfileName = "Cache1min")]
     public IActionResult Get(string city)
     {
         var weather = _weatherForecast.GetForecast(city);
